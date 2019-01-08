@@ -1,9 +1,9 @@
 /*
- * Copyright (c) 2017. Fengguo Wei and others.
+ * Copyright (c) 2018. Fengguo Wei and others.
  * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
+ * are made available under the terms of the Apache License v2.0
  * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
+ * https://www.apache.org/licenses/LICENSE-2.0
  *
  * Detailed contributors are listed in the CONTRIBUTOR.md
  */
@@ -19,10 +19,10 @@ import org.argus.amandroid.core.util.ApkFileUtil
 import org.argus.amandroid.core.{AndroidGlobalConfig, ApkGlobal}
 import org.argus.amandroid.plugin.apiMisuse.{CryptographicMisuse, HideIcon, SSLTLSMisuse}
 import org.argus.amandroid.plugin.ApiMisuseModules
-import org.argus.jawa.alir.Context
-import org.argus.jawa.alir.pta.suspark.InterProceduralSuperSpark
+import org.argus.jawa.core.io.{FileReporter, MsgLevel, NoReporter}
+import org.argus.jawa.flow.Context
+import org.argus.jawa.flow.pta.suspark.InterProceduralSuperSpark
 import org.argus.jawa.core.util.IgnoreException
-import org.argus.jawa.core.{FileReporter, MsgLevel, NoReporter}
 import org.argus.saf.cli.util.CliLogger
 import org.argus.jawa.core.util._
 
@@ -33,7 +33,7 @@ object ApiMisuse {
   
 //  private final val TITLE = "CryptoMisuse"
   
-  def apply(module: ApiMisuseModules.Value, debug: Boolean, sourcePath: String, outputPath: String, forceDelete: Boolean) {
+  def apply(module: ApiMisuseModules.Value, debug: Boolean, sourcePath: String, outputPath: String, forceDelete: Boolean, guessPackage: Boolean) {
     val apkFileUris: MSet[FileResourceUri] = msetEmpty
     val fileOrDir = new File(sourcePath)
     fileOrDir match {
@@ -45,10 +45,10 @@ object ApiMisuse {
         else println(file + " is not decompilable.")
     }
 
-    apiMisuse(apkFileUris.toSet, outputPath, module, debug, forceDelete)
+    apiMisuse(apkFileUris.toSet, outputPath, module, debug, forceDelete, guessPackage)
   }
   
-  def apiMisuse(apkFileUris: Set[FileResourceUri], outputPath: String, module: ApiMisuseModules.Value, debug: Boolean, forceDelete: Boolean): Unit = {
+  def apiMisuse(apkFileUris: Set[FileResourceUri], outputPath: String, module: ApiMisuseModules.Value, debug: Boolean, forceDelete: Boolean, guessPackage: Boolean): Unit = {
     Context.init_context_length(AndroidGlobalConfig.settings.k_context)
 
     println("Total apks: " + apkFileUris.size)
@@ -82,7 +82,7 @@ object ApiMisuse {
             case ApiMisuseModules.SSLTLS_MISUSE => (new SSLTLSMisuse, false)
           }
           if(buildIDFG) {
-            AppInfoCollector.collectInfo(apk, resolveCallBack = true)
+            AppInfoCollector.collectInfo(apk, resolveCallBack = true, guessPackage)
             apk.model.getComponents foreach { comp =>
               val clazz = apk.getClassOrResolve(comp)
               val spark = new InterProceduralSuperSpark(apk)
