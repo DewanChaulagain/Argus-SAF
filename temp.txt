@@ -1,0 +1,10 @@
+i=0;
+for f in *; 
+do 
+    d=Benigndir_$(printf %03d $((i/2000+1))); 
+    sudo mkdir -p $d; 
+    sudo mv "$f" $d; 
+    let i++; 
+done
+
+sudo cp -a /media/dewanc/Seagate/Final-Syscalls-20throttle/B/. /media/wd-duo/Androzoo-filtered/downloads/Output-syscalls-files/
