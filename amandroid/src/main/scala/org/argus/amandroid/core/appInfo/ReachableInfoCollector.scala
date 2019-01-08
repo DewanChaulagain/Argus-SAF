@@ -96,6 +96,7 @@ class ReachableInfoCollector(val global: Global, entryPointTypes: ISet[JawaType]
     global.reporter.println("Collecting callback methods in layout mappings...")
     findClassLayoutMappings()
     global.reporter.println("Collecting callback methods in app source...")
+    global.reporter.println("START_HERE")
     collectCallbackMethodsInAppSource()
     global.reporter.echo(TITLE, "current all callbacks = " + this.callbackMethods)
   }
@@ -135,7 +136,10 @@ class ReachableInfoCollector(val global: Global, entryPointTypes: ISet[JawaType]
     // Check for callback handlers implemented via interfaces
     this.reachableMap.foreach { case (lifecycleElement, sigs) =>
       analyzeReachableMethods(sigs, lifecycleElement)
+      println("Signatures "+sigs+"   LifecycleElements"+lifecycleElement.toString)
     }
+    println("END_HERE")
+    //System.exit(0)
     this.reachableMap.map { case (lifecycleElement, sigs) =>
       lifecycleElement -> sigs.map(_.classTyp)
     }.foreach { case (lifecycleElement, typs) =>

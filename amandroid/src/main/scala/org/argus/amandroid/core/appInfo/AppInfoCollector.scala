@@ -40,6 +40,10 @@ object AppInfoCollector {
     val mfp = new ManifestParser
     mfp.loadClassesFromTextManifest(manifestIS)
     manifestIS.close()
+    reporter.println("START_PERMISSIONS")
+    for(a <- mfp.getPermissions)
+      reporter.println(a)
+    reporter.println("END_PERMISSIONS")
     reporter.echo(TITLE, "entrypoints--->" + mfp.getComponentClasses)
     reporter.echo(TITLE, "packagename--->" + mfp.getPackageName)
     reporter.echo(TITLE, "permissions--->" + mfp.getPermissions)
