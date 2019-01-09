@@ -6,5 +6,5 @@ do
     sudo mv "$f" $d; 
     let i++; 
 done
-#### to test
+### to test
 sudo cp -a /media/dewanc/Seagate/Final-Syscalls-20throttle/B/. /media/wd-duo/Androzoo-filtered/downloads/Output-syscalls-files/
