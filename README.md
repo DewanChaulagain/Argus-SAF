@@ -1,5 +1,5 @@
 # Argus-SAF: Argus static analysis framework
-[![License](https://img.shields.io/badge/License-EPL%201.0-red.svg)](https://opensource.org/licenses/EPL-1.0) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Download](https://api.bintray.com/packages/arguslab/maven/argus-saf/images/download.svg)](https://bintray.com/arguslab/maven/argus-saf/_latestVersion)
 [![Build Status](https://travis-ci.org/arguslab/Argus-SAF.svg?branch=master)](https://travis-ci.org/arguslab/Argus-SAF)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/1a59d168b6fc42faaed643249ac3e2f5)](https://www.codacy.com/app/fgwei521/Argus-SAF?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=arguslab/Argus-SAF&amp;utm_campaign=Badge_Grade)
@@ -14,10 +14,11 @@ project, which have the basic setup for a Argus-SAF enhanced project with demo c
 
 ```
 Argus-SAF/
-+--src/main/scala/org.argus.saf     Main class for argus-saf CLI.
-+--org.argus.jawa                   Core static analysis data structures, "*.class"&"*.jawa" file managing, jawa compiler, class hierarchy, method body resolving, flow analysis, etc.
-+--org.argus.amandroid              Android resource parsers, information collector, decompiler, environment method builder, flow analysis, etc.
-+--org.argus.amandroid.concurrent   Akka actors for Amandroid.
++--src/main/scala/org.argus.saf/Main.scala     Main class for argus-saf CLI.
++--jawa         Core static analysis data structures, "*.class"&"*.jawa" file managing, jawa compiler, class hierarchy, method body resolving, flow analysis, etc.
++--amandroid    Android resource parsers, information collector, decompiler, environment method builder, flow analysis, etc.
++--jnsaf        Java native interface analysis.
++--nativedroid  Annotation based analysis using angr symbolic execution engine.
 ```
 
 ## Obtaining Argus-SAF as library
@@ -44,7 +45,7 @@ libraryDependencies += "com.github.arguslab" %% "amandroid" % VERSION
 
 ## Obtaining Argus-SAF CLI Tool
 
-**Requirement: Java 8**
+**Requirement: Java 10**
 
 1. Click [![Download](https://api.bintray.com/packages/arguslab/maven/argus-saf/images/download.svg)](https://bintray.com/arguslab/maven/argus-saf/_latestVersion)
 2. Download argus-saf_***-version-assembly.jar
@@ -69,7 +70,7 @@ In order to take part in Argus-SAF development, you need to:
 
 3. Open IntelliJ IDEA, select `File -> New -> Project from existing sources`
 (if from initial window: `Import Project`), point to
-the directory where Scala plugin repository is and then import it as SBT project.
+the directory where Argus-SAF repository is and then import it as `SBT project`.
 
 4. When importing is finished, go to Argus-SAF repo directory and run
 
@@ -91,6 +92,53 @@ the directory where Scala plugin repository is and then import it as SBT project
   ```
   $ tools/bin/sbt clean compile test
   ```
+
+7. Generate fat jar: go to Argus-SAF repo directory and run
+  ```
+  $ tools/bin/sbt assembly
+  ```
+  
+## Install JN-Saf with NativeDroid
+
+Install `JN-Saf` and `NativeDroid`:
+  ```
+  $ tools/scripts/install.sh
+  ```
+  
+You can install either one by:
+  ```
+  $ tools/scripts/install.sh jnsaf
+  $ tools/scripts/install.sh nativedroid
+  ```
+
+## Run BenchMark Test
+After install `JN-Saf` and `NativeDroid`. Run:
+  ```
+  $ tools/scripts/benchmark_cli.sh droidbench
+  $ tools/scripts/benchmark_cli.sh iccbench
+  $ tools/scripts/benchmark_cli.sh nativeflowbench
+  ```
+  
+## Launch JN-SAF for native analysis
+
+1. Install nativedroid:
+  ```
+  $ tools/scripts/install.sh nativedroid
+  ```
+2. Start nativedroid server:
+  ```
+  $ python nativedroid/nativedroid/server/native_droid_server.py /tmp/binaries nativedroid/nativedroid/data/sourceAndSinks/NativeSourcesAndSinks.txt nativedroid/data/sourceAndSinks/TaintSourcesAndSinks.txt
+  ```
+3. Use [NativeDroidClient.scala](https://github.com/arguslab/Argus-SAF/blob/master/jnsaf/src/main/scala/org/argus/jnsaf/client/NativeDroidClient.scala) to communicate with the nativedroid server to perform native analysis.
+
+### Troubleshooting:
+
+1. If python code in Intellij shows unresolved imports, you should manually import the nativedroid folder as a python module and set Python SDK.
+Recommend to use a python virtualenv to install nativedroid with it's required python packages.
+
+## Bazel build
+
+Bazel integration in progress. Ignore all the BUILD files for now.
 
 ## How to contribute
 
