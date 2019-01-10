@@ -10,7 +10,8 @@
 
 package org.argus.amandroid.plugin.APICalls
 
-import org.argus.jawa.core.Global
+import org.argus.jawa.core.{Global, JawaMethod}
+import org.argus.jawa.core.ast.CallStatement
 import org.argus.jawa.flow.dfa.InterProceduralDataFlowGraph
 
 class APICalls {
@@ -27,13 +28,21 @@ class APICalls {
       global.getClazz(typ) match {
 
       case Some(c)=>
-        c.getDeclaredMethods.foreach {x => println(x.toString())
+        c.getDeclaredMethods.foreach { x: JawaMethod =>
+          x.getBody.resolvedBody.locations.foreach { line =>
+            line.statement match {
+              case cs: CallStatement => println(cs)
+              case _ =>
+            }
 
-        }
-      case None =>
+          }
+        }/*
+        case Some(c)=>
+          c.getDeclaredMethods.foreach { x: JawaMethod => println(x.toString())  }*/
+
+          case None =>
       }
     }
-
 
 
 
