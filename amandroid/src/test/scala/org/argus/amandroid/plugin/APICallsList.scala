@@ -35,8 +35,13 @@ class APICallsList extends FlatSpec{
     val settings = DecompilerSettings(debugMode = false, forceDelete = true, strategy, reporter)
     val apk = yard.loadApk(fileUri, settings, collectInfo = false, resolveCallBack = false)
 
+    println("App name is : " + apk.model.getAppName)
+    println("Apk Output Uri: "+ apk.model.layout.outputSrcUri )
+
+
     val programmarmethods=new APICalls()
-    programmarmethods.getProgrammarDefinedMethods(apk,None)
+    val args = "/home/dewanc/"
+    programmarmethods.getProgrammarDefinedMethods(apk,apk.model.getAppName,args,None)
 
   }
 

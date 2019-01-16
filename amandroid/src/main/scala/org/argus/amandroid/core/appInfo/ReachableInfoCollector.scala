@@ -12,6 +12,7 @@ package org.argus.amandroid.core.appInfo
 import org.argus.amandroid.core.AndroidConstants
 import org.argus.amandroid.core.parser.LayoutControl
 import org.argus.amandroid.core.codegen.AndroidEntryPointConstants
+import org.argus.amandroid.plugin.APICalls.APICalls
 import org.argus.jawa.flow.reachability.ReachabilityAnalysis
 import org.argus.jawa.flow.util.ExplicitValueFinder
 import org.argus.jawa.core.ast.CallStatement
@@ -86,6 +87,21 @@ class ReachableInfoCollector(val global: Global, entryPointTypes: ISet[JawaType]
     }
     result.toSet
   }
+
+  /** Dewan
+    * Collect the APIs only (System API's and third party APis)
+    *
+    */
+  def collectAPIMethods(): Unit = {
+    global.reporter.println("API_START_HERE")
+    val programmarmethods= new APICalls()
+   // programmarmethods.getProgrammarDefinedMethods(apk,None)
+    global.reporter.println("API_END_HERE")
+
+  }
+
+
+
 
   /**
    * Collects the callback methods for all Android default handlers

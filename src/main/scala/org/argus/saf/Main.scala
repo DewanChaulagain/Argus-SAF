@@ -30,6 +30,7 @@ object Main extends App {
   private val decompilerOptions: Options = new Options
   private val taintOptions: Options = new Options
   private val apiMisuseOptions: Options = new Options
+  private val apiCallsOptions : Options = new Options
   private val apkSubmitterOptions: Options = new Options
   private val allOptions: Options = new Options
 
@@ -90,7 +91,7 @@ object Main extends App {
   }
 
   object Mode extends Enumeration {
-    val ARGUS_SAF, APICHECK, DECOMPILE, TAINT, JNSAF_SERVER, APK_SUBMITTER, BENCHMARK_SUBMITTER = Value
+    val ARGUS_SAF, APICHECK, DECOMPILE, TAINT, JNSAF_SERVER, APK_SUBMITTER, BENCHMARK_SUBMITTER, APICALLS = Value
   }
 
   private def usage(mode: Mode.Value): Unit ={
@@ -123,6 +124,8 @@ object Main extends App {
         println("s[ubmitter] [options] <file_apk/dir> <address> <port>", apkSubmitterOptions)
       case Mode.BENCHMARK_SUBMITTER =>
         println("benchmark [options] <file_dir> <address> <port> <expected_result_file>", apkSubmitterOptions)
+      case Mode.APICALLS =>
+        formatter.printHelp("calls [options] <file_apk/dir>", apiCallsOptions)
     }
 
   }
@@ -160,6 +163,11 @@ object Main extends App {
         cmdTaintAnalysis(commandLine)
         cmdFound = true
       }
+      else if (opt.equalsIgnoreCase("calls")) {
+        cmdApiCallAnalysis(commandLine)
+        cmdFound = true
+      }
+
       else if (opt.equalsIgnoreCase("a") || opt.equalsIgnoreCase("apicheck")) {
         cmdApiMisuse(commandLine)
         cmdFound = true
@@ -229,6 +237,7 @@ object Main extends App {
     var sourcePath: String = null
 
     try {
+
       sourcePath = cli.getArgList.get(1)
     } catch {
       case _: Exception =>
@@ -237,6 +246,9 @@ object Main extends App {
     }
     Decompiler(debug, sourcePath, outputPath, forceDelete, srcLevel, libLevel)
   }
+
+
+
 
   private def cmdTaintAnalysis(cli: CommandLine): Unit = {
     var debug = false
@@ -282,6 +294,39 @@ object Main extends App {
         System.exit(0)
     }
     TaintAnalysis(module, debug, sourcePath, outputPath, forceDelete, guessPackage, approach)
+  }
+  private def cmdApiCallAnalysis(cli: CommandLine): Unit={
+
+    //println("cli: " + cli.toString())
+    //println("cli: " + cli.getArgList().toString());
+
+    var debug = false
+    var guessPackage = false
+    var outputPath: String = "."
+    var forceDelete: Boolean = false
+
+    if(cli.hasOption("d") || cli.hasOption("debug")) {
+      debug = true
+    }
+    if(cli.hasOption("g") || cli.hasOption("guess")) {
+      guessPackage = true
+    }
+    if(cli.hasOption("o") || cli.hasOption("output")) {
+      outputPath = cli.getOptionValue("o")
+    }
+    if(cli.hasOption("f") || cli.hasOption("force")) {
+      forceDelete = true
+    }
+    var sourcePath: String = null
+
+    try {
+      sourcePath = cli.getArgList.get(1)
+    } catch {
+      case _: Exception =>
+        usage(Mode.APICALLS)
+        System.exit(0)
+    }
+    ApiCallsCli(debug, sourcePath, outputPath, forceDelete, guessPackage, cli.getArgList.get(2))
   }
 
   private def cmdApiMisuse(cli: CommandLine): Unit = {
