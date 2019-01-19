@@ -74,16 +74,6 @@ class APICalls {
 
 
   private def writeMapToFile( projectName : String,appName: String,dest : String, mapForAllClass: MMap[String, MMap[Signature, ListBuffer[Signature]]]): Unit = {
-    //apks.foreach { apk =>
-     // val appData = DataCollector.collect(apk)
-      //val outputDirUri = FileUtil.appendFileName(apk.model.layout.outputSrcUri, "result")
-      //val pName = projectName.substring(0, projectName.length - 4)
-      //val outputDirUri = "/home/dewanc/"
-      //val outputDir = FileUtil.toFile(outputDirUri)
-      //if (!outputDir.exists()) outputDir.mkdirs()
-    //println("we are here")
-    //val basepath = "/home/dewanc/"
-
       var appNameFinal =""
       if(appName.contains("apk")){
         appNameFinal = appName.substring(0,appName.length-4)
@@ -92,17 +82,24 @@ class APICalls {
 
 
       val out = new PrintWriter(new File(destFinal))
-      for( (ke,va) <- mapForAllClass){
-        if (ke !=null  ){
+      for( (classNameAsKey,mapForAClassAsvalue) <- mapForAllClass){
+        if (classNameAsKey !=null  ){
           //out.print("{)
-          for( (k,v) <- va){
-            if (k!=null) {
-              for(item: Signature <- v) {
-                out.write(item.toString())
-                out.write(" ")
+          for( (methodName,apiCallsAsList) <- mapForAClassAsvalue){
+              if (methodName != null && apiCallsAsList.length >0)
+              {
+                for (item: Signature <- apiCallsAsList) {
+		  if(item!=apiCallsAsList.last){
+                    out.write(item.toString())
+                    out.write(" ")
+		   }
+                   else
+		    out.write(item.toString())
+                }
+                out.write("#")
+ 		out.write(" ")
               }
-              out.write(".")
-            }
+
           }
           out.write("\n")
         }

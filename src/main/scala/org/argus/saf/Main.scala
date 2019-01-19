@@ -125,7 +125,7 @@ object Main extends App {
       case Mode.BENCHMARK_SUBMITTER =>
         println("benchmark [options] <file_dir> <address> <port> <expected_result_file>", apkSubmitterOptions)
       case Mode.APICALLS =>
-        formatter.printHelp("calls [options] <file_apk/dir>", apiCallsOptions)
+        formatter.printHelp("calls [options] <input file_apk/dir> <output file directory> ", apiCallsOptions)
     }
 
   }
@@ -318,15 +318,17 @@ object Main extends App {
       forceDelete = true
     }
     var sourcePath: String = null
-
+    var destPath: String = null
     try {
       sourcePath = cli.getArgList.get(1)
+      destPath = cli.getArgList.get(2)
     } catch {
       case _: Exception =>
         usage(Mode.APICALLS)
         System.exit(0)
     }
-    ApiCallsCli(debug, sourcePath, outputPath, forceDelete, guessPackage, cli.getArgList.get(2))
+
+    ApiCallsCli(debug, sourcePath, outputPath, forceDelete, guessPackage, destPath)
   }
 
   private def cmdApiMisuse(cli: CommandLine): Unit = {
